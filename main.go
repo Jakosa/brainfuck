@@ -62,7 +62,7 @@ func interpreter(content string) {
 		case "-":
 			tape[cell_ptr]--
 		case ".":
-			fmt.Println(tape[cell_ptr])
+			fmt.Println(string(tape[cell_ptr]))
 		case ",":
 			fmt.Scanln(tape[cell_ptr])
 		case "[":
