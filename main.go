@@ -52,7 +52,6 @@ func interpreter(content string) {
 	ch_ptr := 0
 
 	for ch_ptr < len(content) {
-		return
 		switch string(content[ch_ptr]) {
 		case ">":
 			cell_ptr++
