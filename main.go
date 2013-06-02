@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-const MAX_CELLS = 65536
+const MAX_CELLS uint16 = 65535
 
 func main() {
 	// TODO: add -h --help cmd
@@ -47,9 +47,10 @@ func scanner(fl string) {
 }
 
 func interpreter(content string) {
-	var tape [MAX_CELLS]uint
+	var tape [MAX_CELLS]int32
 	cell_ptr := 0
 	ch_ptr := 0
+	loop := 0
 
 	for ch_ptr < len(content) {
 		switch string(content[ch_ptr]) {
@@ -67,25 +68,29 @@ func interpreter(content string) {
 			fmt.Scanln(tape[cell_ptr])
 		case "[":
 			if tape[cell_ptr] == 0 {
-				for {
+				loop = 1
+				for loop > 0 {
 					ch_ptr++
-					if string(content[ch_ptr]) == "]" {
-						ch_ptr++
-						break
+					next_ch := string(content[ch_ptr])
+					if next_ch == "[" {
+						loop++
+					} else if next_ch == "]" {
+						loop--
 					}
 				}
 			}
 		case "]":
-			if tape[cell_ptr] != 0 {
-				for {
-					ch_ptr--
-					if string(content[ch_ptr]) == "[" {
-						break
-					} else {
-						ch_ptr--
-					}
+			loop = 1
+			for loop > 0 {
+				ch_ptr--
+				prev_ch := string(content[ch_ptr])
+				if prev_ch == "[" {
+					loop--
+				} else if prev_ch == "]" {
+					loop++
 				}
 			}
+			ch_ptr--
 		}
 		ch_ptr++
 	}
