@@ -34,59 +34,59 @@ func scanner(fl string) {
 	}
 	defer file.Close()
 
-	var content string
+	var content []byte
 	buf := make([]byte, 4096)
 	for {
 		count, err := file.Read(buf)
 		if err == io.EOF || count == 0 {
 			break
 		}
-		content += string(buf[:count])
+		content = append(content, buf[:count]...)
 	}
 	interpreter(content)
 }
 
-func interpreter(content string) {
+func interpreter(content []byte) {
 	var tape [MAX_CELLS]int32
 	cell_ptr := 0
 	ch_ptr := 0
 	loop := 0
 
 	for ch_ptr < len(content) {
-		switch string(content[ch_ptr]) {
-		case ">":
+		switch content[ch_ptr] {
+		case '>':
 			cell_ptr++
-		case "<":
+		case '<':
 			cell_ptr--
-		case "+":
+		case '+':
 			tape[cell_ptr]++
-		case "-":
+		case '-':
 			tape[cell_ptr]--
-		case ".":
+		case '.':
 			fmt.Print(string(tape[cell_ptr]))
-		case ",":
+		case ',':
 			fmt.Scanln(tape[cell_ptr])
-		case "[":
+		case '[':
 			if tape[cell_ptr] == 0 {
 				loop = 1
 				for loop > 0 {
 					ch_ptr++
-					next_ch := string(content[ch_ptr])
-					if next_ch == "[" {
+					next_ch := content[ch_ptr]
+					if next_ch == '[' {
 						loop++
-					} else if next_ch == "]" {
+					} else if next_ch == ']' {
 						loop--
 					}
 				}
 			}
-		case "]":
+		case ']':
 			loop = 1
 			for loop > 0 {
 				ch_ptr--
-				prev_ch := string(content[ch_ptr])
-				if prev_ch == "[" {
+				prev_ch := content[ch_ptr]
+				if prev_ch == '[' {
 					loop--
-				} else if prev_ch == "]" {
+				} else if prev_ch == ']' {
 					loop++
 				}
 			}
